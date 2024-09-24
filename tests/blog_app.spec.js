@@ -6,6 +6,7 @@ describe('Blog app', () => {
   });
 
   test('Login form is shown', async ({ page }) => {
-
+    await page.goto('http://localhost:5173');
+    await page.getByRole('button', { name: 'Log in' }).click();
   });
 });
