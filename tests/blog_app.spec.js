@@ -17,5 +17,13 @@ describe('Blog app', () => {
 
       await expect(page.getByText('Superuser logged in')).toBeVisible();
     });
+
+    test('fails with wrong credentials', async ({ page }) => {
+      await page.getByTestId('username').fill('root');
+      await page.getByTestId('password').fill('wrong');
+      await page.getByRole('button', { name: 'Log in' }).click();
+
+      await expect(page.getByText('wrong username or password')).toBeVisible();
+    });
   });
 });
