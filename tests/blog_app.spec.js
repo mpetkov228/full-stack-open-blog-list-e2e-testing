@@ -10,7 +10,7 @@ describe('Blog app', () => {
         password: 'secret'
       }
     });
-    
+
     await page.goto('http://localhost:5173');
   });
 
@@ -33,6 +33,24 @@ describe('Blog app', () => {
       await page.getByRole('button', { name: 'Log in' }).click();
 
       await expect(page.getByText('wrong username or password')).toBeVisible();
+    });
+  });
+
+  describe('When logged in', () => {
+    beforeEach(async ({ page }) => {
+      await page.getByTestId('username').fill('root');
+      await page.getByTestId('password').fill('secret');
+      await page.getByRole('button', { name: 'Log in' }).click();
+    });
+
+    test('a new blog can be created', async ({ page }) => {
+      await page.getByRole('button', { name: 'new blog' }).click();
+      await page.getByTestId('title').fill('test blog');
+      await page.getByTestId('author').fill('test author');
+      await page.getByTestId('url').fill('test url');
+      await page.getByRole('button', { name: 'create' }).click();
+
+      await expect(page.getByText('a new blog test blog by test author added')).toBeVisible();
     });
   });
 });
