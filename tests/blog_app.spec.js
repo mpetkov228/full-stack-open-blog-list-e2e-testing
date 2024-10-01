@@ -51,6 +51,10 @@ describe('Blog app', () => {
       await page.getByRole('button', { name: 'create' }).click();
 
       await expect(page.getByText('a new blog test blog by test author added')).toBeVisible();
+
+      await page.goto('http://localhost:5173');
+
+      await expect(page.getByText('test blog test author')).toBeVisible();
     });
   });
 });
