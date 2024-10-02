@@ -56,5 +56,24 @@ describe('Blog app', () => {
 
       await expect(page.getByText('test blog test author')).toBeVisible();
     });
+
+    describe('When blog already created', () => {
+      beforeEach(async ({ page }) => {
+        await page.getByRole('button', { name: 'new blog' }).click();
+        await page.getByTestId('title').fill('another blog');
+        await page.getByTestId('author').fill('me');
+        await page.getByTestId('url').fill('mysite.com');
+        await page.getByRole('button', { name: 'create' }).click();
+
+        await page.goto('http://localhost:5173');
+      });
+
+      test('blogs can be liked', async ({ page }) => {
+        await page.getByRole('button', { name: 'view' }).click();
+        await page.getByRole('button', { name: 'like' }).click();
+
+        await expect(page.getByText('likes 1')).toBeVisible();
+      });
+    });
   });
 });
