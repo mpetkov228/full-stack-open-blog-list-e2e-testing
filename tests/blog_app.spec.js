@@ -74,6 +74,17 @@ describe('Blog app', () => {
 
         await expect(page.getByText('likes 1')).toBeVisible();
       });
+
+      test('blog can be removed', async ({ page }) => {
+        await page.getByRole('button', { name: 'view' }).click();
+
+        page.on('dialog', dialog => dialog.accept());
+        await page.getByRole('button', { name: 'remove' }).click();
+
+        await page.goto('http://localhost:5173');
+        
+        await expect(page.getByText('another blog me')).not.toBeVisible();
+      });
     });
   });
 });
