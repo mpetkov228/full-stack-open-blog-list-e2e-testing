@@ -90,13 +90,12 @@ describe('Blog app', () => {
 
         await createBlog(page, 'blog 1', 'not me', 'www.com');
         await page.goto('http://localhost:5173');
-        await page.goto('http://localhost:5173');
 
-        await expect(page.getByText('another blog me')).toBeVisible();
-        await getByRole('button', { name: 'view' }).first().click()
-        // await buttons[2].click();
-        
-        // await expect(page.getByRole('button', { name: 'remove' })).not.toBeVisible();
+        await page.getByRole('button', { name: 'view' }).first().click()
+        await expect(page.getByRole('button', { name: 'remove' })).not.toBeVisible();
+
+        await page.getByRole('button', { name: 'view' }).last().click()
+        await expect(page.getByRole('button', { name: 'remove' })).toBeVisible();
       });
     });
   });
