@@ -10,8 +10,6 @@ const createBlog = async (page, title, author, url) => {
   await page.getByTestId('author').fill(author);
   await page.getByTestId('url').fill(url);
   await page.getByRole('button', { name: 'create' }).click();
-
-  await page.goto('http://localhost:5173');
 };
 
 export { loginWith, createBlog };

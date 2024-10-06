@@ -1,4 +1,5 @@
 const { test, expect, beforeEach, describe } = require('@playwright/test');
+const { loginWith, createBlog } = require('./testHelper');
 
 describe('Blog app', () => {
   beforeEach(async ({ page, request }) => {
@@ -8,6 +9,13 @@ describe('Blog app', () => {
         name: 'Superuser',
         username: 'root',
         password: 'secret'
+      }
+    });
+    await request.post('http://localhost:3003/api/users', {
+      data: {
+        name: 'Test user',
+        username: 'test',
+        password: 'password'
       }
     });
 
@@ -20,9 +28,7 @@ describe('Blog app', () => {
 
   describe('Login', () => {
     test('succeeds with correct credentials', async ({ page }) => {
-      await page.getByTestId('username').fill('root');
-      await page.getByTestId('password').fill('secret');
-      await page.getByRole('button', { name: 'Log in' }).click();
+      await loginWith(page, 'root', 'secret');
 
       await expect(page.getByText('Superuser logged in')).toBeVisible();
     });
@@ -44,11 +50,7 @@ describe('Blog app', () => {
     });
 
     test('a new blog can be created', async ({ page }) => {
-      await page.getByRole('button', { name: 'new blog' }).click();
-      await page.getByTestId('title').fill('test blog');
-      await page.getByTestId('author').fill('test author');
-      await page.getByTestId('url').fill('test url');
-      await page.getByRole('button', { name: 'create' }).click();
+      await createBlog(page, 'test blog', 'test author', 'test url');
 
       await expect(page.getByText('a new blog test blog by test author added')).toBeVisible();
 
@@ -59,11 +61,7 @@ describe('Blog app', () => {
 
     describe('When blog already created', () => {
       beforeEach(async ({ page }) => {
-        await page.getByRole('button', { name: 'new blog' }).click();
-        await page.getByTestId('title').fill('another blog');
-        await page.getByTestId('author').fill('me');
-        await page.getByTestId('url').fill('mysite.com');
-        await page.getByRole('button', { name: 'create' }).click();
+        await createBlog(page, 'another blog', 'me', 'mysite.com');
 
         await page.goto('http://localhost:5173');
       });
@@ -84,6 +82,21 @@ describe('Blog app', () => {
         await page.goto('http://localhost:5173');
         
         await expect(page.getByText('another blog me')).not.toBeVisible();
+      });
+
+      test('remove button seen only by blog creator', async ({ page }) => {
+        await page.getByRole('button', { name: 'log out' }).click();
+        await loginWith(page, 'test', 'password');
+
+        await createBlog(page, 'blog 1', 'not me', 'www.com');
+        await page.goto('http://localhost:5173');
+        await page.goto('http://localhost:5173');
+
+        await expect(page.getByText('another blog me')).toBeVisible();
+        await getByRole('button', { name: 'view' }).first().click()
+        // await buttons[2].click();
+        
+        // await expect(page.getByRole('button', { name: 'remove' })).not.toBeVisible();
       });
     });
   });
